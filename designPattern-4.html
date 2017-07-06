@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>模板方法模式---设计模式</title>
+	<script language="javascript" src="jquery.min.js"></script>
+</head>
+<body>
+<a href="index.html">返回目录页</a><br/><br/><br/>
+<h1>模板方法模式</h1>
+<script type="text/javascript">
+	$(function(){
+		window.zlui = new ZLUI();
+		zlui.init();
+	});
+	function ZLUI(){
+	};
+	ZLUI.prototype = {
+		init: function () {
+			var self = this;
+			self.demo1();
+			self.demo2();
+			self.demo3();
+			self.demo4();
+			self.demo5();
+			self.demo6();
+			self.demo7();
+			self.demo8();
+			self.demo9();
+			self.demo10();
+			self.demo11();
+			self.demo12();
+			self.demo13();
+			self.demo14();
+		},
+		demo1: function () {
+			/*模式方法是预先定义一组算法，先把算法的不变部分抽象到父类，再将另外一些可变的步骤延迟到子类去实现。听起来有点像工厂模式( 非前面说过的简单工厂模式 ).
+			最大的区别是,工厂模式的意图是根据子类的实现最终获得一种对象. 而模版方法模式着重于父类对子类的控制.
+			一个很常用的场景是在一个公司的项目中，经常由架构师搭好架构，声明出抽象方法。下面的程序员再去分头重写这些抽象方法。*/
+			var Life = function(){
+			}
+			Life.prototype.init = function(){
+				this.dna();
+				this.born();
+				this.grow();
+				this.old();
+				this.dead();
+			}
+			Life.prototype.dna = function(){
+				console.log('万物：染色体交换...');
+			}
+			Life.prototype.born = function(){
+				console.log('万物：出生...');
+			}
+			Life.prototype.grow = function(){
+				console.log('万物：长大...');
+			}
+			Life.prototype.old = function(){
+				console.log('万物：衰老...');
+			}
+			Life.prototype.dead = function(){
+				console.log('万物：死亡...');
+			}
+			console.log('------------万物的一生------------');
+			var life = new Life();
+			life.init();
+			var Mammal = function(){
+			}
+			Mammal.prototype = Life.prototype;   //继承Life
+			Mammal.prototype.born = function(){
+				console.log('哺乳动物：胎生...');
+			}
+			Mammal.prototype.grow = function(){
+				//再留给子类去实现
+			}
+			Mammal.prototype.old = function(){
+				console.log('哺乳动物：自由基的过氧化反应...');
+			}
+			Mammal.prototype.dead = function(){
+				//再留给子类去实现
+			}
+			//再实现一个Dog类
+			var Dog = function(){
+			}
+			//Dog继承自哺乳动物.
+			Dog.prototype = Mammal.prototype;
+			Mammal.prototype.grow = function(){
+				console.log('哺乳动物：喝奶长大...');
+			}
+			Mammal.prototype.dead = function(){
+				console.log('哺乳动物：不同的哺乳动物，死亡时间不同...');
+			}
+			console.log('------------哺乳动物的一生------------');
+			var dog = new Dog();
+			dog.init();
+		},
+		demo2: function () {
+		},
+		demo3: function () {
+		},
+		demo4: function () {
+		},
+		demo5: function () {
+		},
+		demo6: function () {
+		},
+		demo7: function () {
+		},
+		demo8: function () {
+		},
+		demo9: function () {
+		},
+		demo10: function () {
+		},
+		demo11: function () {
+		},
+		demo12: function () {
+		},
+		demo13: function () {
+		},
+		demo14: function () {
+		}
+	}
+</script>
+</body>
+</html>

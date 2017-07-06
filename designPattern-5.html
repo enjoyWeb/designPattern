@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>策略模式---设计模式</title>
+	<script language="javascript" src="jquery.min.js"></script>
+</head>
+<body>
+<a href="index.html">返回目录页</a><br/><br/><br/>
+<h1>策略模式</h1><br/><br/><br/>
+<form action = "http://www.zlingweb.com" id="registerForm" method = "post">
+	<p>
+		<label>请输入用户名：</label>
+		<input type="text" name="userName"/>
+	</p>
+	<p>
+		<label>请输入密码：</label>
+		<input type="text" name="password"/>
+	</p>
+	<p>
+		<label>请输入手机号码：</label>
+		<input type="text" name="phoneNumber"/>
+	</p>
+	<button type="submit">确定</button>
+</form>
+<script type="text/javascript">
+	$(function(){
+		window.zlui = new ZLUI();
+		zlui.init();
+	});
+	function ZLUI(){
+	};
+	ZLUI.prototype = {
+		init: function () {
+			var self = this;
+			self.demo1();
+			self.demo2();
+			self.demo3();
+			self.demo4();
+			self.demo5();
+			self.demo6();
+			self.demo7();
+			self.demo8();
+			self.demo9();
+			self.demo10();
+			self.demo11();
+			self.demo12();
+			self.demo13();
+			self.demo14();
+		},
+		demo1: function () {
+			/*策略模式的定义是：定义一系列的算法，把它们一个个封装起来，并且使它们可以相互替换。
+			使用策略模式的优点如下：
+			优点：1. 策略模式利用组合，委托等技术和思想，有效的避免很多if条件语句。
+				  2. 策略模式提供了开放-封闭原则，使代码更容易理解和扩展。
+				  3. 策略模式中的代码可以复用。*/
+			console.log('------------员工工资计算(Javascript版本的策略模式)------------');
+			var obj = {
+				"A": function(salary) {
+					return salary * 4;
+				},
+				"B" : function(salary) {
+					return salary * 3;
+				},
+				"C" : function(salary) {
+					return salary * 2;
+				}
+			};
+			var calculateBouns =function(level,salary) {
+				return obj[level](salary);
+			};
+			console.log(calculateBouns('A',10000)); // 40000
+		},
+		demo2: function () {
+			/*一个基于策略模式的程序至少由2部分组成，
+			第一个部分是一组策略类，策略类封装了具体的算法，并负责具体的计算过程。
+			第二个部分是环境类Context，该Context接收客户端的请求，随后把请求委托给某一个策略类。*/
+			console.log('------------员工工资计算(策略模式重构代码)------------');
+			var performanceA = function(){};
+			performanceA.prototype.calculate = function(salary) {
+				return salary * 4;
+			};
+			var performanceB = function(){};
+			performanceB.prototype.calculate = function(salary) {
+				return salary * 3;
+			};
+			var performanceC = function(){};
+			performanceC.prototype.calculate = function(salary) {
+				return salary * 2;
+			};
+			// 奖金类
+			var Bouns = function(){
+				this.salary = null;    // 原始工资
+				this.levelObj = null;  // 绩效等级对应的策略对象
+			};
+			Bouns.prototype.setSalary = function(salary) {
+				this.salary = salary;  // 保存员工的原始工资
+			};
+			Bouns.prototype.setlevelObj = function(levelObj){
+				this.levelObj = levelObj;  // 设置员工绩效等级对应的策略对象
+			};
+			// 取得奖金数
+			Bouns.prototype.getBouns = function(){
+				// 把计算奖金的操作委托给对应的策略对象
+				return this.levelObj.calculate(this.salary);
+			};
+			var bouns = new Bouns();
+			bouns.setSalary(10000);
+			bouns.setlevelObj(new performanceA()); // 设置策略对象
+			console.log(bouns.getBouns());  // 40000
+			bouns.setlevelObj(new performanceB()); // 设置策略对象
+			console.log(bouns.getBouns());  // 30000
+		},
+		demo3: function () {
+			/*我们先创建一个Validator对象，然后通过validator.add方法往validator对象中添加一些效验规则，validator.add方法接收3个参数，如下代码：
+			validator.add(registerForm.password,'minLength:6','密码长度不能小于6位');
+			registerForm.password 为效验的input输入框dom节点；
+			minLength:6： 是以一个冒号隔开的字符串，冒号前面的minLength代表客户挑选的strategys对象，冒号后面的数字6表示在效验过程中所必须验证的参数，
+			minLength:6 的意思是效验 registerForm.password 这个文本输入框的value最小长度为6位；如果字符串中不包含冒号，说明效验过程中不需要额外的效验信息；
+			第三个参数是当效验未通过时返回的错误信息；
+			当我们往validator对象里添加完一系列的效验规则之后，会调用validator.start()方法来启动效验。
+			如果validator.start()返回了一个errorMsg字符串作为返回值，说明该次效验没有通过，此时需要registerForm.onsubmit方法返回false来阻止表单提交。
+			我们通过add配置的方式就完成了一个表单的效验；这样的话，那么代码可以当做一个组件来使用，并且可以随时调用，在修改表单验证规则的时候，也非常方便，通过传递参数即可调用；
+			给某个文本输入框添加多种效验规则，上面的代码我们可以看到，我们只是给输入框只能对应一种效验规则，
+			比如上面的我们只能效验输入框是否为空，validator.add(registerForm.userName,'isNotEmpty','用户名不能为空');
+			但是如果我们既要校验输入框是否为空，还要效验输入框的长度不要小于10位的话，那么我们期望需要像如下传递参数：
+			validator.add(registerForm.userName,[{strategy:’isNotEmpty’,errorMsg:’用户名不能为空’}，{strategy: 'minLength:6',errorMsg:'用户名长度不能小于6位'}])*/
+			console.log('------------表单校验------------');
+			// 策略对象(策略类)
+			var strategys = {
+				isNotEmpty: function(value,errorMsg) {
+					if(value === '') {
+						return errorMsg;
+					}
+				},
+				// 限制最小长度
+				minLength: function(value,length,errorMsg) {
+					if(value.length < length) {
+						return errorMsg;
+					}
+				},
+				// 手机号码格式
+				mobileFormat: function(value,errorMsg) {
+					if(!/(^1[3|5|8][0-9]{9}$)/.test(value)) {
+						return errorMsg;
+					}
+				}
+			};
+			// Validator类在这里作为Context(环境类)，负责接收用户的请求并委托给strategy 对象
+			var Validator = function(){
+				this.cache = [];  // 保存效验规则
+			};
+			Validator.prototype.add = function(dom,rules) {
+				var self = this;
+				for(var i = 0, rule; rule = rules[i++]; ){
+					(function(rule){
+						var strategyAry = rule.strategy.split(":");
+						var errorMsg = rule.errorMsg;
+						self.cache.push(function(){
+							var strategy = strategyAry.shift();
+							strategyAry.unshift(dom.value);
+							strategyAry.push(errorMsg);
+							return strategys[strategy].apply(dom,strategyAry);
+						});
+					})(rule);
+				}
+			};
+			Validator.prototype.start = function(){
+				for(var i = 0, validatorFunc; validatorFunc = this.cache[i++]; ) {
+					var msg = validatorFunc(); // 开始效验 并取得效验后的返回信息
+					if(msg) {
+						return msg;
+					}
+				}
+			};
+			// 代码调用
+			var registerForm = document.getElementById("registerForm");
+			var validateFunc = function(){
+				var validator = new Validator(); // 创建一个Validator对象
+				/* 添加一些效验规则 */
+				validator.add(registerForm.userName,[
+					{strategy: 'isNotEmpty',errorMsg:'用户名不能为空'},
+					{strategy: 'minLength:6',errorMsg:'用户名长度不能小于6位'}
+				]);
+				validator.add(registerForm.password,[
+					{strategy: 'minLength:6',errorMsg:'密码长度不能小于6位'}
+				]);
+				validator.add(registerForm.phoneNumber,[
+					{strategy: 'mobileFormat',errorMsg:'手机号格式不正确'}
+				]);
+				var errorMsg = validator.start(); // 获得效验结果
+				return errorMsg; // 返回效验结果
+			};
+			// 点击确定提交
+			registerForm.onsubmit = function(){
+				var errorMsg = validateFunc();
+				if(errorMsg){
+					alert(errorMsg);
+					return false;
+				}
+			}
+		},
+		demo4: function () {
+		},
+		demo5: function () {
+		},
+		demo6: function () {
+		},
+		demo7: function () {
+		},
+		demo8: function () {
+		},
+		demo9: function () {
+		},
+		demo10: function () {
+		},
+		demo11: function () {
+		},
+		demo12: function () {
+		},
+		demo13: function () {
+		},
+		demo14: function () {
+		}
+	}
+</script>
+</body>
+</html>

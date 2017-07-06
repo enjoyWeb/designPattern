@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>单例模式---设计模式</title>
+	<script language="javascript" src="jquery.min.js"></script>
+</head>
+<body>
+<a href="index.html">返回目录页</a><br/><br/><br/>
+<h1>单例模式</h1>
+<div id="Id1">创建div</div>
+<div id="Id2">创建iframe</div>
+<script type="text/javascript">
+	$(function(){
+		window.zlui = new ZLUI();
+		zlui.init();
+	});
+	function ZLUI(){
+	};
+	ZLUI.prototype = {
+		init: function () {
+			var self = this;
+			self.demo1();
+			self.demo2();
+			self.demo3();
+			self.demo4();
+			self.demo5();
+			self.demo6();
+			self.demo7();
+			self.demo8();
+			self.demo9();
+			self.demo10();
+			self.demo11();
+			self.demo12();
+			self.demo13();
+			self.demo14();
+		},
+		/*单体模式提供了一种将代码组织为一个逻辑单元的手段，这个逻辑单元中的代码可以通过单一变量进行访问。
+
+		 单体模式的优点是：
+		 可以用来划分命名空间，减少全局变量的数量。
+		 使用单体模式可以使代码组织的更为一致，使代码容易阅读和维护。
+		 可以被实例化，且实例化一次。
+
+		 单体模式是一个用来划分命名空间并将一批属性和方法组织在一起的对象，如果它可以被实例化，那么它只能被实例化一次。*/
+		demo1: function () {
+			// 单体模式
+			var Singleton = function(name){
+				this.name = name;
+			};
+			Singleton.prototype.getName = function(){
+				return this.name;
+			}
+			// 获取实例对象
+			var getInstance = (function() {
+				var instance = null;
+				return function(name) {
+					if(!instance) {
+						instance = new Singleton(name);
+					}
+					return instance;
+				}
+			})();
+			// 测试单体模式的实例
+			var a = getInstance("aa");
+			var b = getInstance("bb");
+			console.log('------------基本点------------');
+			console.log(a === b); // true
+			console.log(a.getName());// aa
+			console.log(b.getName());// aa
+		},
+		demo2: function () {
+			console.log('------------示例------------');
+			var css = {'width': '300px',
+				'height': '300px',
+				'position': 'fixed',
+				'top': '50%',
+				'left': '50%',
+				'border': '1px solid #ddd',
+				'margin': '-150px 0 0 -150px'
+			};
+			// 创建div
+			var createWindow = function(){
+				var div = document.createElement("div");
+				$(div).html("我是创建的div").css(css);
+				document.body.appendChild(div);
+				return div;
+			};
+			// 创建iframe
+			var createIframe = function(){
+				var iframe = document.createElement("iframe");
+				$(iframe).css(css);
+				document.body.appendChild(iframe);
+				return iframe;
+			};
+			// 获取实例的封装代码
+			// 我们使用一个参数fn传递进去，如果有result这个实例的话，直接返回，否则的话，当前的getInstance函数调用fn这个函数，是this指针指向与这个fn这个函数；
+			// 之后返回被保存在result里面；现在我们可以传递一个函数进去，不管他是创建div也好，还是创建iframe也好，总之如果是这种的话，都可以使用getInstance来获取他们的实例对象；
+			var getInstance = function(fn) {
+				var result;
+				return function(){
+					return result || (result = fn.call(this,arguments));
+				}
+			};
+			// 测试创建div
+			var createSingleDiv = getInstance(createWindow);
+			document.getElementById("Id1").onclick = function(){
+				var win = createSingleDiv();
+				win.style.display = "block";
+				console.log('创建div');
+			};
+			// 测试创建iframe
+			var createSingleIframe = getInstance(createIframe);
+			document.getElementById("Id2").onclick = function(){
+				var win = createSingleIframe();
+				win.src = "http://www.zlingweb.com";
+				console.log('创建iframe');
+			};
+		},
+		demo3: function () {
+		},
+		demo4: function () {
+		},
+		demo5: function () {
+		},
+		demo6: function () {
+		},
+		demo7: function () {
+		},
+		demo8: function () {
+		},
+		demo9: function () {
+		},
+		demo10: function () {
+		},
+		demo11: function () {
+		},
+		demo12: function () {
+		},
+		demo13: function () {
+		},
+		demo14: function () {
+		}
+	}
+</script>
+</body>
+</html>

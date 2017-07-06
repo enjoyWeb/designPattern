@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>代理模式---设计模式</title>
+	<script language="javascript" src="jquery.min.js"></script>
+</head>
+<body>
+<a href="index.html">返回目录页</a><br/><br/><br/>
+<h1>代理模式</h1><br/><br/><br/>
+<input type="checkbox" class="j-input" data-id="复选框1" />复选框1
+<input type="checkbox" class="j-input" data-id="复选框2" />复选框2
+<input type="checkbox" class="j-input" data-id="复选框3" />复选框3
+<input type="checkbox" class="j-input" data-id="复选框4" />复选框4
+<input type="checkbox" class="j-input" data-id="复选框5" />复选框5
+<input type="checkbox" class="j-input" data-id="复选框6" />复选框6<br/><br/><br/>
+<script type="text/javascript">
+	$(function(){
+		window.zlui = new ZLUI();
+		zlui.init();
+	});
+	function ZLUI(){
+	};
+	ZLUI.prototype = {
+		init: function () {
+			var self = this;
+			self.demo1();
+			self.demo2();
+			self.demo3();
+			self.demo4();
+			self.demo5();
+			self.demo6();
+			self.demo7();
+			self.demo8();
+			self.demo9();
+			self.demo10();
+			self.demo11();
+			self.demo12();
+			self.demo13();
+			self.demo14();
+		},
+		demo1: function () {
+			/*代理是一个对象，它可以用来控制对本体对象的访问，它与本体对象实现了同样的接口，代理对象会把所有的调用方法传递给本体对象；
+			代理模式最基本的形式是对访问进行控制，而本体对象则负责执行所分派的那个对象的函数或者类，简单的来讲本地对象注重的去执行页面上的代码，代理则控制本地对象何时被实例化，何时被使用；
+			代理的优点：
+			代理对象可以代替本体被实例化，并使其可以被远程访问；
+			它还可以把本体实例化推迟到真正需要的时候.对于实例化比较费时的本体对象，或者因为尺寸比较大以至于不用时不适于保存在内存中的本体，我们可以推迟实例化该对象；*/
+			console.log('------------京东CEO与奶茶妹的故事------------');
+			// 先申明一个奶茶妹对象
+			var TeaAndMilkGirl = function(name) {
+				this.name = name;
+			};
+			// 这是京东ceo先生
+			var Ceo = function(girl) {
+				this.girl = girl;
+				// 送结婚礼物 给奶茶妹
+				this.sendMarriageRing = function(ring) {
+					console.log("Hi " + this.girl.name + ", ceo送你一个礼物：" + ring);
+				}
+			};
+			// 京东ceo的经纪人是代理，来代替送
+			var ProxyObj = function(girl){
+				this.girl = girl;
+				// 经纪人代理送礼物给奶茶妹
+				this.sendGift = function(gift) {
+					// 代理模式负责本体对象实例化
+					(new Ceo(this.girl)).sendMarriageRing(gift);
+				}
+			};
+			// 初始化
+			var proxy = new ProxyObj(new TeaAndMilkGirl("奶茶妹"));
+			proxy.sendGift("结婚戒"); // Hi 奶茶妹, ceo送你一个礼物：结婚戒
+		},
+		demo2: function () {
+			/*myImage 函数只负责创建img元素，代理函数ProxyImage 负责给图片设置loading图片，当图片真正加载完后的话，调用myImage中的myImage.setSrc方法设置图片的路径；*/
+			console.log('------------使用虚拟代理实现图片的预加载------------');
+			var myImage = (function(){
+				var imgNode = document.createElement("img");
+				document.body.appendChild(imgNode);
+				return function(src){
+					imgNode.src = src;
+					console.log('图片加载完成');
+				}
+			})();
+			// 代理模式
+			var ProxyImage = (function(){
+				var img = new Image();
+				// 图片加载完后
+				img.onload = function(){
+					myImage(this.src);
+				};
+				return function(src) {
+					console.log('正在加载图片');
+					myImage("http://img.lanrentuku.com/img/allimg/1212/5-121204193Q9-50.gif");
+					img.src = src;
+				}
+			})();
+			// 调用方式
+			ProxyImage("https://img.alicdn.com/tps/i4/TB1b_neLXXXXXcoXFXXc8PZ9XXX-130-200.png");
+		},
+		demo3: function () {
+			/*下面我们通过虚拟代理的方式，延迟2秒，在2秒后获取所有被选中的复选框的按钮id，一次性给服务器发请求。
+  			通过点击页面的复选框，选中的时候增加一个属性isflag，没有选中的时候删除该属性isflag，然后延迟个2秒，
+  			在2秒后重新判断页面上所有复选框中有isflag的属性上的id，存入数组，然后代理函数调用本体函数的方法，把延迟2秒后的所有id一次性发给本体方法，
+  			本体方法可以获取所有的id，可以向服务器端发送ajax请求，这样的话，服务器的请求压力相对来说减少了。*/
+			// 本体函数
+			var mainFunc = function(ids) {
+				console.log(ids); // 即可打印被选中的所有的id
+				// 再把所有的id一次性发ajax请求给服务器端
+			};
+			// 代理函数 通过代理函数获取所有的id 传给本体函数去执行
+			var proxyFunc = (function(){
+				var cache = [],  // 保存一段时间内的id
+						timer = null; // 定时器
+				return function(checkboxs) {
+					// 判断如果定时器有的话，不进行覆盖操作
+					if(timer) {
+						return;
+					}
+					console.log('------------使用代理一次性发送请求------------');
+					timer = setTimeout(function(){
+						// 在2秒内获取所有被选中的id，通过属性isflag判断是否被选中
+						for(var i = 0,ilen = checkboxs.length; i < ilen; i++) {
+							if(checkboxs[i].hasAttribute("isflag")) {
+								var id = checkboxs[i].getAttribute("data-id");
+								cache[cache.length] = id;
+							}
+						}
+						mainFunc(cache.join(',')); // 2秒后需要给本体函数传递所有的id
+						// 清空定时器
+						clearTimeout(timer);
+						timer = null;
+						cache = [];
+					},2000);
+				}
+			})();
+			var checkboxs = document.getElementsByClassName("j-input");
+			for(var i = 0,ilen = checkboxs.length; i < ilen; i+=1) {
+				(function(i){
+					checkboxs[i].onclick = function(){
+						if(this.checked) {
+							// 给当前增加一个属性
+							this.setAttribute("isflag",1);
+						}else {
+							this.removeAttribute('isflag');
+						}
+						// 调用代理函数
+						proxyFunc(checkboxs);
+					}
+				})(i);
+			}
+		},
+		demo4: function () {
+			// 计算乘法
+			var mult = function(){
+				var a = 1;
+				for(var i = 0,ilen = arguments.length; i < ilen; i+=1) {
+					a = a*arguments[i];
+				}
+				return a;
+			};
+			// 计算加法
+			var plus = function(){
+				var a = 0;
+				for(var i = 0,ilen = arguments.length; i < ilen; i+=1) {
+					a += arguments[i];
+				}
+				return a;
+			}
+			// 代理函数
+			var proxyFunc = function(fn) {
+				var cache = {};  // 缓存对象
+				return function(){
+					var args = Array.prototype.join.call(arguments,',');
+					if(args in cache) {
+						return cache[args];   // 使用缓存代理
+					}
+					return cache[args] = fn.apply(this,arguments);
+				}
+			};
+			var proxyMult = proxyFunc(mult);
+			console.log('------------缓存代理------------');
+			console.log('计算的数值:'+proxyMult(1,2,3,4)); // 24
+			console.log('缓存的数值:'+proxyMult(1,2,3,4)); // 缓存取 24
+
+			var proxyPlus = proxyFunc(plus);
+			console.log('计算的数值:'+proxyPlus(1,2,3,4));  // 10
+			console.log('缓存的数值:'+proxyPlus(1,2,3,4));  // 缓存取 10
+		},
+		demo5: function () {
+		},
+		demo6: function () {
+		},
+		demo7: function () {
+		},
+		demo8: function () {
+		},
+		demo9: function () {
+		},
+		demo10: function () {
+		},
+		demo11: function () {
+		},
+		demo12: function () {
+		},
+		demo13: function () {
+		},
+		demo14: function () {
+		}
+	}
+</script>
+</body>
+</html>
